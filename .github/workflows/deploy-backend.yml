@@ -20,6 +20,15 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        run: pip install uv
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
       - run: npm i -g vercel
       - name: Fetch project settings
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
