@@ -34,6 +34,7 @@ jobs:
           API_URL: ${{ vars.API_URL }}
         run: |
           test -n "$API_URL" || { echo "No API_URL variable available"; exit 1; }
+          mkdir -p src/environments
           echo "export const API_URL = '$API_URL';" > src/environments/api-url.ts
       - name: Build
         run: npx ng build --base-href "/${{ github.event.repository.name }}/"
