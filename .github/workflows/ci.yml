@@ -18,8 +18,11 @@ jobs:
         run: pip install -r requirements-dev.txt
       - name: Lint (ruff)
         run: ruff check .
-      - name: Tests (pytest)
-        run: pytest
+      - name: Tests with coverage (pytest)
+        run: |
+          pytest --cov=app --cov-report=term-missing
+          echo "## Backend coverage" >> $GITHUB_STEP_SUMMARY
+          coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
 
   frontend:
     runs-on: ubuntu-latest
@@ -35,5 +38,12 @@ jobs:
         run: npm ci
       - name: Lint (eslint)
         run: npm run lint
-      - name: Tests (vitest)
-        run: npx ng test --watch=false
+      - name: Tests with coverage (vitest)
+        run: npx ng test --watch=false --coverage
+      - name: Coverage summary
+        if: always()
+        run: |
+          echo "## Frontend coverage" >> $GITHUB_STEP_SUMMARY
+          node -e "const t=require('./coverage/frontend/coverage-summary.json').total;
+          console.log('| Metric | % |\n|---|---|');
+          for (const k of ['statements','branches','functions','lines']) console.log('| '+k+' | '+t[k].pct+'% |')" >> $GITHUB_STEP_SUMMARY
