@@ -1,5 +1,16 @@
-from fastapi import FastAPI
+from typing import Annotated
+
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from db import get_db
+from models import User
+from schemas import UserCreate, UserOut
+
+DbSession = Annotated[Session, Depends(get_db)]
 
 app = FastAPI()
 
@@ -27,3 +38,21 @@ def hello():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/users", response_model=list[UserOut])
+def list_users(db: DbSession):
+    return db.scalars(select(User).order_by(User.created_at)).all()
+
+
+@app.post("/users", response_model=UserOut, status_code=201)
+def create_user(data: UserCreate, db: DbSession):
+    user = User(**data.model_dump())
+    db.add(user)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "User with this email already exists") from None
+    db.refresh(user)
+    return user

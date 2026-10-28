@@ -1,4 +1,5 @@
 import os
+from functools import cache
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
@@ -17,6 +18,12 @@ class Base(DeclarativeBase):
     pass
 
 
+@cache
 def make_session():
     engine = create_engine(database_url(), poolclass=NullPool)
     return sessionmaker(engine)
+
+
+def get_db():
+    with make_session()() as session:
+        yield session
