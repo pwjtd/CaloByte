@@ -26,6 +26,11 @@ class ActivityLevel(enum.Enum):
     active = "active"
     very_active = "very_active"
 
+class Sex(enum.Enum):
+    male = "male"
+    female = "female"
+    other = "other"
+
 
 class User(Base):
     __tablename__ = "users"
@@ -42,6 +47,9 @@ class User(Base):
     activity: Mapped[ActivityLevel] = mapped_column(
         Enum(ActivityLevel, name="activity_level"),
         server_default=ActivityLevel.moderate.value,
+    )
+    sex: Mapped[Sex] = mapped_column(
+        Enum(Sex, name="sex"), server_default=Sex.male.value
     )
     bmi: Mapped[Decimal] = mapped_column(
         Numeric(4, 1),
