@@ -30,6 +30,14 @@ jobs:
         with:
           node-version: 24
       - run: npm i -g vercel
+      - name: Install backend dependencies
+        working-directory: backend
+        run: pip install -r requirements-dev.txt
+      - name: Run database migrations
+        working-directory: backend
+        env:
+          DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+        run: alembic upgrade head
       - name: Fetch project settings
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build
