@@ -4,7 +4,15 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from sqlalchemy import (
-    CheckConstraint, Computed, DateTime, Enum, Index, Numeric, String, func, text,
+    CheckConstraint,
+    Computed,
+    DateTime,
+    Enum,
+    Index,
+    Numeric,
+    String,
+    func,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
